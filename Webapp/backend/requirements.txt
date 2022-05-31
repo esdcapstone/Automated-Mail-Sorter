@@ -2,4 +2,3 @@ fastapi
 sqlalchemy
 pymysql
 uvicorn
-yarn

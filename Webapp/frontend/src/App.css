@@ -1,0 +1,13 @@
+html, body, #BaseContainer{
+    height: 100vh;
+}
+
+#BaseContainer{
+    display: grid;
+    background-color: yellow;
+    grid-template-rows: 1fr 4fr 3fr 2fr;
+    justify-items: center;
+    row-gap: 2%;
+    column-gap: 10%;
+    
+}

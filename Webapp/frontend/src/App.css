@@ -1,13 +1,22 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 html, body, #BaseContainer{
+    
     height: 100vh;
+    grid-template-rows: 4fr 4fr 4fr 2fr;
+
 }
 
 #BaseContainer{
-    display: grid;
-    background-color: yellow;
-    grid-template-rows: 1fr 4fr 3fr 2fr;
-    justify-items: center;
-    row-gap: 2%;
-    column-gap: 10%;
+    background-color: rgb(82, 76, 76);
     
+    
+}
+
+.BaseContainer-Child1{
+    background-color: goldenrod;
 }

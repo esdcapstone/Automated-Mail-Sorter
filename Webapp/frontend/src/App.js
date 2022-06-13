@@ -4,30 +4,44 @@
 
 import React from 'react'
 import './App.css'
-// import Box from '@mui/material/Box'
-import { Button, Grid} from '@mui/material'
 
+import 'fontsource-roboto'
+import {  Grid } from '@mui/material'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { responsiveFontSizes } from '@mui/material'
+import { CssBaseline } from '@mui/material'
+import Button from '@mui/material/Button'
+import { Typography } from '@mui/material'
+let theme = createTheme({
+  palette: {
+    primary: {
+      main: '#091425',
+      contrastText: '#E2DEDE'
+
+
+
+    },
+    secondary: {
+      
+      main: '#e0164a',
+      contrastText: '#E2DEDE'
+    }
+  },
+  
+  typography:{
+
+  }
+})
+
+theme = responsiveFontSizes(theme);
 
 function App() {
   return (
-    <Grid container id='BaseContainer' gridAutoRows="true">
-      <Grid container item xs={12}  sx={{ backgroundColor: "rgb(197, 194, 194)", 
-      alignItems: 'center', justifyContent: "center"}} >
-        <Grid item xs = {2} sx = {{ textAlign: 'center', backgroundColor: "rgb(65, 62, 100)" }}><Button>Welcome</Button></Grid>
-        <Grid item xs={8} sx = {{ textAlign: 'center' ,backgroundColor: 'rgb(66, 100, 64)'}}>Title</Grid>
-        <Grid item  xs = {2} sx = {{ textAlign: 'center',backgroundColor: 'rgb(100, 62, 62)'}}>Logout</Grid>
-      </Grid>
+    <ThemeProvider theme={theme}>
+      <Typography variant='h1'>Automated Mail Sorter</Typography>
+      <Button variant= "contained" color = "primary">Hello world</Button>
+    </ThemeProvider>
 
-      <Grid item xs={12} backgroundColor = "violet" textAlign="center">
-        Big Container
-      </Grid>
-      <Grid item xs={12}>
-        Three small containers
-      </Grid>
-      <Grid item xs={12}>
-        Footer
-      </Grid>
-    </Grid>
   )
 }
 

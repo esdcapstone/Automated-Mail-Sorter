@@ -5,6 +5,7 @@ import cv2
 from imutils.object_detection import non_max_suppression
 
 
+Y_PADDING = 10
 width = 320
 height = 320
 east = "pretrained/frozen_east_text_detection.pb"
@@ -119,6 +120,6 @@ def text_detect(image):
 
         # draw the bounding box on the image
         #cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
-        imgs.append(orig[startY:endY, startX:endX])
+        imgs.append(orig[startY - Y_PADDING:endY + Y_PADDING, startX:endX])
 
     return imgs

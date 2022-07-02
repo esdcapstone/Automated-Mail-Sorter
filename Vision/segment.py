@@ -3,9 +3,8 @@ import numpy as np
 import functools
 
 
-def segment_img():
+def segment_img(image):
     # Read the image and convert to grayscale
-    image = cv2.imread("img.png")
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
     # Apply Gaussian blurring and thresholding 
@@ -54,16 +53,9 @@ def segment_img():
     
     boundingBoxes = sorted(boundingBoxes, key=functools.cmp_to_key(compare))
     
-    one = boundingBoxes[0]
-    two = boundingBoxes[1]
-    
-    #cv2.rectangle(image, (one[0], one[1]), (one[0] + one[2], one[1] + one[3]), (0,255,0), 1)
-    #cv2.rectangle(image, (two[0], two[1]), (two[0] + two[2], two[1] + two[3]), (0,255,0), 1)
-
     boxes = []
-    boxes.append(one)
-    boxes.append(two)
+
+    for box in boundingBoxes:
+        boxes.append(box)
     
     return image, boxes
-    #cv2.imshow("Thresh", image)
-    #cv2.waitKey(0)

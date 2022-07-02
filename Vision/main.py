@@ -7,6 +7,10 @@ from text_detect import text_detect
 
 
 cam = cv2.VideoCapture(0)
+cam.set(cv2.CAP_PROP_FRAME_WIDTH, 2560) # img width
+cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1440)    # img height
+
+# Transfer model onto cpu
 device = torch.device("cpu")
 model = torch.load("pretrained/alphabets.pkl", map_location=device)
 

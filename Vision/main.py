@@ -25,6 +25,7 @@ def main():
     # Load torch model
     print("[INFO] Loading torch model alphabets.pkl...")
     model = torch.load(torch_model, map_location=device)
+    model.eval()
 
     print("\n# All models loaded #\n")
 
@@ -72,7 +73,7 @@ def main():
 
             # Reset params and display info
             province_found = False
-            print(f"All operations took: {(datetime.now() - start_time).total_seconds()}s") # display time taken
+            print(f"\n# All operations took: {(datetime.now() - start_time).total_seconds()}s #\n") # display time taken
 
     except KeyboardInterrupt:
         print("\nExiting...\n")
@@ -99,7 +100,6 @@ def recognize_characters(model, img):
 
     # Infer
     with torch.no_grad():
-        model.eval()
         res = model(resized_im)
         print(f"character detected: {chr(ord('a') + res.argmax(axis=1))}")
 

@@ -1,22 +1,33 @@
-from datetime import datetime
 import cv2
 import torch
 import torchvision.transforms.functional as F
 
+from datetime import datetime
 from segment import segment_img
 from text_detect import text_detect
 
 
 cam = cv2.VideoCapture(0)
-cam.set(cv2.CAP_PROP_FRAME_WIDTH, 2560) # img width
+cam.set(cv2.CAP_PROP_FRAME_WIDTH, 2560)     # img width
 cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1440)    # img height
 
-# Transfer model onto cpu
+# Models
 device = torch.device("cpu")
-model = torch.load("pretrained/alphabets.pkl", map_location=device)
+torch_model = "pretrained/alphabets.pkl"
+east = "pretrained/frozen_east_text_detection.pb"
 
 
 def main():
+    # Load the pre-trained EAST text detector
+    print("[INFO] Loading EAST text detector...")
+    net = cv2.dnn.readNet(east)
+
+    # Load torch model
+    print("[INFO] Loading torch model alphabets.pkl...")
+    model = torch.load(torch_model, map_location=device)
+
+    print("\n# All models loaded #\n")
+
     try:
         while True:
             # Block here
@@ -33,7 +44,7 @@ def main():
                 continue
 
             start_time = datetime.now() # record time
-            potential_regions = text_detect(img)
+            potential_regions = text_detect(net, img)
             province_found = False
 
             if len(potential_regions) == 0:
@@ -47,7 +58,7 @@ def main():
                 text = ""  # record each character in this string
                 for box in boxes:
                     im_boxed = im[box[1]:box[1] + box[3], box[0]:box[0] + box[2]]
-                    text += recognize_characters(im_boxed)
+                    text += recognize_characters(model, im_boxed)
                 text = text.upper() # alpha-2 codes are all caps
 
                 if check_province(text):
@@ -76,7 +87,7 @@ def send_to_web(msg):
     print(msg)
 
 
-def recognize_characters(img):
+def recognize_characters(model, img):
     img = torch.from_numpy(img).permute(2, 0, 1)
 
     # Tranforms
@@ -110,6 +121,7 @@ def check_province(alpha_2_code):
     ]
 
     return alpha_2_code in all_provinces
+
 
 if __name__ == "__main__":
     main()

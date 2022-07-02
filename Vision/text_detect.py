@@ -12,7 +12,7 @@ east = "pretrained/frozen_east_text_detection.pb"
 min_confidence = 0.5
 
 
-def text_detect(image):
+def text_detect(net, image):
     # load the input image and grab the image dimensions
     #image = cv2.imread(args["image"])
     orig = image.copy()
@@ -37,8 +37,8 @@ def text_detect(image):
     ]
 
     # load the pre-trained EAST text detector
-    print("[INFO] loading EAST text detector...")
-    net = cv2.dnn.readNet(east)
+    #print("[INFO] loading EAST text detector...")
+    #net = cv2.dnn.readNet(east)
 
     # construct a blob from the image and then perform a forward pass of
     # the model to obtain the two output layer sets

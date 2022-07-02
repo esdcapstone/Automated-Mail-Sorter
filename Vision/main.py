@@ -1,3 +1,4 @@
+from datetime import datetime
 import cv2
 import torch
 import torchvision.transforms.functional as F
@@ -31,19 +32,39 @@ def main():
                 print("Failed to read")
                 continue
 
+            start_time = datetime.now() # record time
             potential_regions = text_detect(img)
+            province_found = False
+
+            if len(potential_regions) == 0:
+                print("No potential regions found")
+                continue
 
             for idx, region in enumerate(potential_regions):
                 print(f"region {idx}")
                 im, boxes = segment_img(region)
 
+                text = ""  # record each character in this string
                 for box in boxes:
                     im_boxed = im[box[1]:box[1] + box[3], box[0]:box[0] + box[2]]
-                    recognize_characters(im_boxed)
+                    text += recognize_characters(im_boxed)
+                text = text.upper() # alpha-2 codes are all caps
 
-                print()
+                if check_province(text):
+                    # Found
+                    # TODO: send message to controller and backend
+                    print(f"\nProvince: {text}\n")
+                    province_found = True
+
+            if not province_found:
+                print("No text region with a province found")
+
+            # Reset params and display info
+            province_found = False
+            print(f"All operations took: {(datetime.now() - start_time).total_seconds()}s") # display time taken
+
     except KeyboardInterrupt:
-        print("Exiting...")
+        print("\nExiting...\n")
         cam.release()
         
 
@@ -71,6 +92,24 @@ def recognize_characters(img):
         res = model(resized_im)
         print(f"character detected: {chr(ord('a') + res.argmax(axis=1))}")
 
+        return chr(ord('a') + res.argmax(axis=1))
+
+
+def check_province(alpha_2_code):
+    all_provinces = [
+        "AB", # Alberta
+        "BC", # British Columbia
+        "MB", # Manitoba
+        "NB", # New Brunswick
+        "NL", # Newfoundland and Labrador
+        "NS", # Nova Scotia
+        "ON", # Ontario
+        "PE", # Prince Edward Island
+        "QC", # Quebec
+        "SK", # Saskatchewan
+    ]
+
+    return alpha_2_code in all_provinces
 
 if __name__ == "__main__":
     main()

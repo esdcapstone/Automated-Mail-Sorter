@@ -16,31 +16,35 @@ model = torch.load("pretrained/alphabets.pkl", map_location=device)
 
 
 def main():
-    while True:
-        # Block here
-        input("Press any key to take picture")
+    try:
+        while True:
+            # Block here
+            input("Press any key to take picture")
 
-        # Request received
-        print("Received request for image capture")
-        cv2_ret, img = cam.read()
-        #img = cv2.imread("full.jpg")
+            # Request received
+            print("Received request for image capture")
+            cv2_ret, img = cam.read()
+            #img = cv2.imread("full.jpg")
 
-        if not cv2_ret:
-            # Could not read image, send this to controller
-            print("Failed to read")
-            continue
+            if not cv2_ret:
+                # Could not read image, send this to controller
+                print("Failed to read")
+                continue
 
-        potential_regions = text_detect(img)
+            potential_regions = text_detect(img)
 
-        for idx, region in enumerate(potential_regions):
-            print(f"region {idx}")
-            im, boxes = segment_img(region)
+            for idx, region in enumerate(potential_regions):
+                print(f"region {idx}")
+                im, boxes = segment_img(region)
 
-            for box in boxes:
-                im_boxed = im[box[1]:box[1] + box[3], box[0]:box[0] + box[2]]
-                recognize_characters(im_boxed)
+                for box in boxes:
+                    im_boxed = im[box[1]:box[1] + box[3], box[0]:box[0] + box[2]]
+                    recognize_characters(im_boxed)
 
-            print()
+                print()
+    except KeyboardInterrupt:
+        print("Exiting...")
+        cam.release()
         
 
 def send_to_controller(msg):

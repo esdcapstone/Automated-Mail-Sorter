@@ -57,5 +57,5 @@ def segment_img(image):
 
     for box in boundingBoxes:
         boxes.append(box)
-    
-    return image, boxes
+
+    return image, sorted(boxes)

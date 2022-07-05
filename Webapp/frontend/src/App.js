@@ -39,7 +39,7 @@ let theme = {
       '@media (min-width:600px)': {
         fontSize: '2.4rem',
       },
-      [defaultTheme.breakpoints.up('md')]: {
+      [defaultTheme.breakpoints.up('sm')]: {
         fontSize: '3rem',
       },
     }
@@ -69,23 +69,23 @@ function App() {
 
       </Grid>
       <Grid container justifyContent="center">
-        <Paper elevation={10} style={{ display: 'flex', alignItems: 'center', justifyContent:"center",height: 75, width: 75, backgroundColor: "#091425" }}>
+        <Paper elevation={10} style={{ display: 'flex', alignItems: 'center', justifyContent: "center", height: 75, width: 75, backgroundColor: "#091425" }}>
           <Typography variant='h6' color="white">Start Sorting</Typography></Paper>
       </Grid>
       <Grid container padding="25px" justifyContent="space-around">
-      <Grid item >
-          <Paper elevation={10} style={{ display: 'flex',flexDirection:"column", alignItems: 'center', justifyContent: 'center', height: 75, width: 75, backgroundColor: "#e0164a" }}>
-          <Typography variant='h5' color="white">ON</Typography>
+        <Grid item >
+          <Paper elevation={10} style={{ display: 'flex', flexDirection: "column", alignItems: 'center', justifyContent: 'center', height: 75, width: 75, backgroundColor: "#e0164a" }}>
+            <Typography variant='h5' color="white">ON</Typography>
             <Button onClick={f1} variant="contained" color='secondary'>{val1}</Button></Paper>
         </Grid>
         <Grid item>
-          <Paper elevation={10} style={{ display: 'flex',flexDirection:"column", alignItems: 'center', justifyContent: 'center', height: 75, width: 75, backgroundColor: "#e0164a" }}>
-          <Typography variant='h5' color="white">AB</Typography>
+          <Paper elevation={10} style={{ display: 'flex', flexDirection: "column", alignItems: 'center', justifyContent: 'center', height: 75, width: 75, backgroundColor: "#e0164a" }}>
+            <Typography variant='h5' color="white">AB</Typography>
             <Button onClick={f2} variant="contained" color='secondary'>{val2}</Button></Paper>
         </Grid>
         <Grid item>
-          <Paper elevation={10} style={{ display: 'flex',flexDirection:"column", alignItems: 'center', justifyContent: 'center', height: 75, width: 75, backgroundColor: "#e0164a" }}>
-          <Typography variant='h5' color="white">BC</Typography>
+          <Paper elevation={10} style={{ display: 'flex', flexDirection: "column", alignItems: 'center', justifyContent: 'center', height: 75, width: 75, backgroundColor: "#e0164a" }}>
+            <Typography variant='h5' color="white">BC</Typography>
             <Button onClick={f3} variant="contained" color='secondary'>{val3}</Button></Paper>
         </Grid>
       </Grid>

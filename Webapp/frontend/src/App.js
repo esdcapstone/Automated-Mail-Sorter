@@ -1,52 +1,51 @@
+import React from "react";
+import { useState } from "react";
+import "./App.css";
 
+import "fontsource-roboto";
+import { Grid } from "@mui/material";
+import { ThemeProvider, createTheme, styled } from "@mui/material/styles";
+import { responsiveFontSizes } from "@mui/material";
+import { CssBaseline } from "@mui/material";
+import Button from "@mui/material/Button";
+import { Typography } from "@mui/material";
+import { Box } from "@mui/system";
+import { Paper } from "@mui/material";
 
-
-
-import React from 'react'
-import { useState } from 'react'
-import './App.css'
-
-import 'fontsource-roboto'
-import { Grid } from '@mui/material'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { responsiveFontSizes } from '@mui/material'
-import { CssBaseline } from '@mui/material'
-import Button from '@mui/material/Button'
-import { Typography } from '@mui/material'
-import { Box } from '@mui/system'
-import { Paper } from '@mui/material'
+// Create a basic theme
 const defaultTheme = createTheme({
   palette: {
     primary: {
-      main: '#091425',
-      contrastText: '#E2DEDE'
-
+      main: "#091425",
+      contrastText: "#dcd3d3",
     },
     secondary: {
-
-      main: '#e0164a',
-      contrastText: '#E2DEDE'
-    }
+      main: "#dc1f04",
+      contrastText: "#E2DEDE",
+    },
   },
-})
+});
 
-const { breakpoints, typography: { pxToRem } } = defaultTheme
+const StyledPaper = styled("Paper")(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
+}));
+// Make responsive text size
+// const { breakpoints, typography: { pxToRem } } = defaultTheme
 let theme = {
   ...defaultTheme,
   typography: {
     h1: {
-      fontSize: '1.5rem',
-      '@media (min-width:600px)': {
-        fontSize: '2.4rem',
+      fontSize: "1.5rem",
+      "@media (min-width:600px)": {
+        fontSize: "2.4rem",
       },
-      [defaultTheme.breakpoints.up('sm')]: {
-        fontSize: '3rem',
+      [defaultTheme.breakpoints.up("sm")]: {
+        fontSize: "3rem",
       },
-    }
-  }
-}
-
-
+    },
+  },
+};
 
 function App() {
   const [val1, setVal1] = useState(0);
@@ -64,39 +63,97 @@ function App() {
   }
   return (
     <ThemeProvider theme={theme}>
-      <Grid container justifyContent="center" textAlign="center">
-        <Typography variant='h1'>Automated Mail Sorting</Typography>
-
+      <Grid container justifyContent="center">
+        <Typography variant="h1" color="primary">
+          Automated Mail Sorting
+        </Typography>
       </Grid>
       <Grid container justifyContent="center">
-        <Paper elevation={10} style={{ display: 'flex', alignItems: 'center', justifyContent: "center", height: 75, width: 75, backgroundColor: "#091425" }}>
-          <Typography variant='h6' color="white">Start Sorting</Typography></Paper>
+        <Button
+          variant="contained"
+          sx={{
+            height: "5rem",
+            margin: "2rem",
+          }}
+        >
+          Start Sorting
+        </Button>
+        {/* <StyledPaper
+          elevation={10}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "6rem",
+            width: "6rem",
+            margin: "2rem",
+          }}
+        >
+          <Typography variant="h6">Start Sorting</Typography>
+        </StyledPaper> */}
       </Grid>
       <Grid container padding="25px" justifyContent="space-around">
-        <Grid item >
-          <Paper elevation={10} style={{ display: 'flex', flexDirection: "column", alignItems: 'center', justifyContent: 'center', height: 75, width: 75, backgroundColor: "#e0164a" }}>
-            <Typography variant='h5' color="white">ON</Typography>
-            <Button onClick={f1} variant="contained" color='secondary'>{val1}</Button></Paper>
+        <Grid item>
+          <StyledPaper
+            elevation={10}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: 75,
+              width: 75,
+            }}
+          >
+            <Typography variant="h5">ON</Typography>
+            <Button onClick={f1} variant="contained" color="secondary">
+              {val1}
+            </Button>
+          </StyledPaper>
         </Grid>
         <Grid item>
-          <Paper elevation={10} style={{ display: 'flex', flexDirection: "column", alignItems: 'center', justifyContent: 'center', height: 75, width: 75, backgroundColor: "#e0164a" }}>
-            <Typography variant='h5' color="white">AB</Typography>
-            <Button onClick={f2} variant="contained" color='secondary'>{val2}</Button></Paper>
+          <StyledPaper
+            elevation={10}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: 75,
+              width: 75,
+            }}
+          >
+            <Typography variant="h5" color="white">
+              AB
+            </Typography>
+            <Button onClick={f2} variant="contained" color="secondary">
+              {val2}
+            </Button>
+          </StyledPaper>
         </Grid>
         <Grid item>
-          <Paper elevation={10} style={{ display: 'flex', flexDirection: "column", alignItems: 'center', justifyContent: 'center', height: 75, width: 75, backgroundColor: "#e0164a" }}>
-            <Typography variant='h5' color="white">BC</Typography>
-            <Button onClick={f3} variant="contained" color='secondary'>{val3}</Button></Paper>
+          <StyledPaper
+            elevation={10}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: 75,
+              width: 75,
+            }}
+          >
+            <Typography variant="h5" color="white">
+              BC
+            </Typography>
+            <Button onClick={f3} variant="contained" color="secondary">
+              {val3}
+            </Button>
+          </StyledPaper>
         </Grid>
       </Grid>
-
-
     </ThemeProvider>
-
-  )
+  );
 }
 
 export default App;
-
-
-

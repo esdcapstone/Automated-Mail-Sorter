@@ -8,7 +8,7 @@
             "server": "localhost",
             "port": 3306,
             "driver": "MySQL",
-            "name": "mysql_connection_1",
+            "name": "my_sql_connection",
             "database": "users",
             "username": "sqluser",
             "password": "password"

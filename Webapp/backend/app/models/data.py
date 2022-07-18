@@ -5,7 +5,7 @@ from app.config.db import meta, engine
 
 dataEntries = Table('dataEntry', meta,
                     Column('id', Integer, primary_key=True),
-                    Column('province', String(255)),
+                    Column('distance', String(255)),
                     Column('timestamp', String(255))
                     )
 

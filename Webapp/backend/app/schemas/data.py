@@ -2,5 +2,5 @@ from pydantic import BaseModel
 
 
 class DataEntry(BaseModel):
-    province: str
+    distance: str
     timestamp: str

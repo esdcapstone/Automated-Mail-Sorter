@@ -1,7 +1,10 @@
 from sqlalchemy import create_engine, MetaData
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-engine = create_engine(
-    'mysql+pymysql://sqluser:password@backend_db_1:3306/data')
+MYSQL_DATABASE_URL = 'mysql+pymysql://sqluser:password@backend_db_1:3306/users'
+engine = create_engine(MYSQL_DATABASE_URL)
 
-meta = MetaData()
-connection = engine.connect()
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()

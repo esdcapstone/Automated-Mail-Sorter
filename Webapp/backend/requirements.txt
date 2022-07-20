@@ -3,3 +3,5 @@ sqlalchemy
 pymysql
 uvicorn
 matplotlib
+passlib 
+bcrypt

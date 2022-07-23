@@ -25,8 +25,8 @@ async def fetchSingleEntry(id: int):
 @data.post('/')
 async def createEntry(data: DataEntry):
     # If timestamp in correct format
-    timestamp = data.timestamp
-    print(datetime.fromisoformat(timestamp))
+    #timestamp = data.timestamp
+    #print(datetime.fromisoformat(timestamp))
 
     # Insert into database and return 200 Ok
     # Otherwise

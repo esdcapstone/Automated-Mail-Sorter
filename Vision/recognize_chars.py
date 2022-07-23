@@ -39,10 +39,10 @@ def main():
     model.eval()
 
     img = cv2.imread("boxed_0.jpg")
-    recognize_characters(model, img, debug=True)
+    recognize_characters(model, img)
 
     img = cv2.imread("boxed_1.jpg")
-    recognize_characters(model, img, debug=True)
+    recognize_characters(model, img)
 
 
 if __name__ == "__main__":

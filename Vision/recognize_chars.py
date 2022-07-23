@@ -12,7 +12,7 @@ def recognize_characters(model, img, debug=False):
     # Tranforms
     resized_im = F.resize(img, (28, 28), interpolation=InterpolationMode.BILINEAR)
     resized_im = F.rgb_to_grayscale(resized_im)
-#    resized_im = F.autocontrast(resized_im)
+    resized_im = F.autocontrast(resized_im)
     resized_im = F.invert(resized_im)
     resized_im = resized_im.float() / 255.0
     resized_im = resized_im.unsqueeze(dim=0)
@@ -39,10 +39,10 @@ def main():
     model.eval()
 
     img = cv2.imread("boxed_0.jpg")
-    recognize_characters(model, img)
+    recognize_characters(model, img, debug=True)
 
     img = cv2.imread("boxed_1.jpg")
-    recognize_characters(model, img)
+    recognize_characters(model, img, debug=True)
 
 
 if __name__ == "__main__":

@@ -170,3 +170,4 @@ cython_debug/
 .mypy_cache
 *.jpg
 *.png
+pretrained/

@@ -6,6 +6,7 @@ from imutils.object_detection import non_max_suppression
 
 
 Y_PADDING = 10
+X_PADDING = 10
 width = 320
 height = 320
 east = "pretrained/frozen_east_text_detection.pb"
@@ -120,6 +121,27 @@ def text_detect(net, image):
 
         # draw the bounding box on the image
         #cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
-        imgs.append(orig[startY - Y_PADDING:endY + Y_PADDING, startX:endX])
+        imgs.append(orig[startY - Y_PADDING:endY + Y_PADDING, startX - X_PADDING:endX + X_PADDING])
 
     return imgs
+
+
+def main():
+    east = "pretrained/frozen_east_text_detection.pb"
+    net = cv2.dnn.readNet(east)
+
+    img = cv2.imread("lol.jpg")
+
+    potential_regions = text_detect(net, img)
+
+    for idx, region in enumerate(potential_regions):
+        cv2.imwrite(f"detected_{idx}.jpg", region)
+        print(f"region {idx}")
+        #im, boxes = segment_img(region)
+
+        #for box in boxes:
+        #    im_boxed = im[box[1]:box[1] + box[3], box[0]:box[0] + box[2]]
+
+
+if __name__ == "__main__":
+    main()

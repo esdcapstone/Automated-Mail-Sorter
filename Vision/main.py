@@ -1,30 +1,35 @@
 import cv2
+import json
 import torch
-import torchvision.transforms.functional as F
 
 from datetime import datetime
 from segment import segment_img
 from text_detect import text_detect
+from recognize_chars import recognize_characters
 
 
 cam = cv2.VideoCapture(0)
 cam.set(cv2.CAP_PROP_FRAME_WIDTH, 2560)     # img width
 cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1440)    # img height
 
-# Models
-device = torch.device("cpu")
-torch_model = "pretrained/alphabets.pkl"
-east = "pretrained/frozen_east_text_detection.pb"
-
 
 def main():
+    # Load config
+    try:
+        with open("config.json", "r") as conf_file:
+            config = json.load(conf_file)
+            conf_file.close()
+    except FileNotFoundError:
+        print("Error: config.json not found") 
+        exit(1)
+
     # Load the pre-trained EAST text detector
     print("[INFO] Loading EAST text detector...")
-    net = cv2.dnn.readNet(east)
+    net = cv2.dnn.readNet(config["east"])
 
     # Load torch model
     print("[INFO] Loading torch model alphabets.pkl...")
-    model = torch.load(torch_model, map_location=device)
+    model = torch.load(config["torch_model"], map_location=config["device"])
     model.eval()
 
     print("\n# All models loaded #\n")
@@ -86,24 +91,6 @@ def send_to_controller(msg):
 
 def send_to_web(msg):
     print(msg)
-
-
-def recognize_characters(model, img):
-    img = torch.from_numpy(img).permute(2, 0, 1)
-
-    # Tranforms
-    resized_im = F.pad(img, padding=5, padding_mode="edge")
-    resized_im = F.resize(resized_im, (28, 28))
-    resized_im = F.rgb_to_grayscale(resized_im)
-    resized_im = resized_im / 255.0
-    resized_im = resized_im.unsqueeze(dim=0)
-
-    # Infer
-    with torch.no_grad():
-        res = model(resized_im)
-        print(f"character detected: {chr(ord('a') + res.argmax(axis=1))}")
-
-        return chr(ord('a') + res.argmax(axis=1))
 
 
 def check_province(alpha_2_code):

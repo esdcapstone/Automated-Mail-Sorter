@@ -9,7 +9,7 @@ def segment_img(image):
     
     # Apply Gaussian blurring and thresholding 
     # to reveal the characters on the license plate
-    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    blurred = cv2.GaussianBlur(gray, (3, 3), 0)
     thresh = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 45, 15)
     
     # Perform connected components analysis on the thresholded image and
@@ -19,8 +19,8 @@ def segment_img(image):
     
     # Set lower bound and upper bound criteria for characters
     total_pixels = image.shape[0] * image.shape[1]
-    lower = total_pixels // 70 # heuristic param, can be fine tuned if necessary
-    upper = total_pixels // 10 # heuristic param, can be fine tuned if necessary
+    lower = total_pixels // 80 # heuristic param, can be fine tuned if necessary
+    upper = total_pixels // 5 # heuristic param, can be fine tuned if necessary
     
     # Loop over the unique components
     for (i, label) in enumerate(np.unique(labels)):
@@ -59,3 +59,17 @@ def segment_img(image):
         boxes.append(box)
 
     return image, sorted(boxes)
+
+
+def main():
+    img = cv2.imread("detected_0.jpg")
+
+    _, boxes = segment_img(img)
+
+    for idx, box in enumerate(boxes):
+        im_boxed = img[box[1]:box[1] + box[3], box[0]:box[0] + box[2]]
+        cv2.imwrite(f"boxed_{idx}.jpg", im_boxed)
+
+
+if __name__ == "__main__":
+    main()

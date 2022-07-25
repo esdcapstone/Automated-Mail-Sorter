@@ -1,11 +1,12 @@
 # from datetime import date
 # from matplotlib.pyplot import connect
+from datetime import timezone
 import pytz
 import traceback
 from typing import List
 
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, WebSocket
 from app.config.db import SessionLocal, engine
 from app.schemas.data_schema import DataEntry
 from app.utils import data_utils
@@ -35,16 +36,33 @@ async def fetchData(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
 
 @data.post('/', response_model=DataEntry)
 async def postData(data: DataEntry, db: Session = Depends(get_db)):
-    dt_object = data.timestamp.replace(tzinfo=pytz.utc)
-    print(dt_object)
+
     try:
-        timestamp = datetime.isoformat(data.timestamp)
+        print(type(data.timestamp))
+        # Conversion of timestamp sent by client to UTC. At the same time it
+        # Checks for any error in the iso format of timestamp sent by client
+        timestamp = data.timestamp.astimezone(timezone.utc).isoformat()
         print(timestamp)
     except:
         print(traceback.print_exc())
+        # Raise exception for bad format
         raise HTTPException(status_code=400, detail="Invalid timestamp format")
 
     return data_utils.createDataEntry(db=db, dataEntry=data)
+
+# Web socket route for receiving province data real-time
+
+
+@data.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()  # Wait till websocket connection is accepted by client
+    # When connection gets accepted, keep on awaiting for receiving and sending data
+    while True:
+        data = await websocket.receive_text()
+        if data != None:
+            print(data)
+        await websocket.send_text(f"{data}")
+
 # async def fetchData():
 #     return connection.execute(dataEntries.select()).fetchall()
 # @data.get('/{id}')

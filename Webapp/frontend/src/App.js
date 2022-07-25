@@ -36,9 +36,9 @@ let theme = {
   ...defaultTheme,
   typography: {
     h1: {
-      fontSize: "1.5rem",
+      fontSize: "5rem",
       "@media (min-width:600px)": {
-        fontSize: "2.4rem",
+        fontSize: "5rem",
       },
       [defaultTheme.breakpoints.up("sm")]: {
         fontSize: "3rem",
@@ -47,13 +47,36 @@ let theme = {
   },
 };
 
+async function sendMessage(event, websockt) {
+  let button1Text = event.target.innerText;
+  try {
+    await websockt.send(button1Text);
+  } catch (e) {
+    console.log(`${e}`);
+  }
+}
 function App() {
   const [val1, setVal1] = useState(0);
   const [val2, setVal2] = useState(0);
   const [val3, setVal3] = useState(0);
 
-  function f1() {
+  // Websocket code
+  let validProvinceList = ["AB", "BC", "ON"];
+  ws = new WebSocket("ws://localhost:8000/data/ws");
+  ws.onmessage = (e) => {
+    let data;
+    try {
+      data = e.data; // Province name
+      setVal2(parseInt(data));
+    } catch {
+      console.log("Error in parsing websocket");
+      throw "Error in parsing websocket";
+    }
+  };
+
+  function f1(e) {
     setVal1(val1 + 1);
+    sendMessage(e, ws);
   }
   function f2() {
     setVal2(val2 + 1);
@@ -72,11 +95,14 @@ function App() {
         <Button
           variant="contained"
           sx={{
-            height: "5rem",
+            height: "10rem",
+            width: "15rem",
             margin: "2rem",
           }}
         >
-          Start Sorting
+          <Typography variant="h3" color="primary">
+            Start Sorting
+          </Typography>
         </Button>
         {/* <StyledPaper
           elevation={10}
@@ -92,7 +118,12 @@ function App() {
           <Typography variant="h6">Start Sorting</Typography>
         </StyledPaper> */}
       </Grid>
-      <Grid container padding="25px" justifyContent="space-around">
+      <Grid
+        className="Data"
+        container
+        padding="25px"
+        justifyContent="space-around"
+      >
         <Grid item>
           <StyledPaper
             elevation={10}
@@ -101,12 +132,17 @@ function App() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              height: 75,
-              width: 75,
+              height: "10rem",
+              width: "10rem",
             }}
           >
-            <Typography variant="h5">ON</Typography>
-            <Button onClick={f1} variant="contained" color="secondary">
+            <Typography variant="h3">ON</Typography>
+            <Button
+              className="Data__Button--ON"
+              onClick={f1}
+              variant="contained"
+              color="secondary"
+            >
               {val1}
             </Button>
           </StyledPaper>
@@ -119,11 +155,11 @@ function App() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              height: 75,
-              width: 75,
+              height: "10rem",
+              width: "10rem",
             }}
           >
-            <Typography variant="h5" color="white">
+            <Typography variant="h3" color="white">
               AB
             </Typography>
             <Button onClick={f2} variant="contained" color="secondary">
@@ -139,11 +175,11 @@ function App() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              height: 75,
-              width: 75,
+              height: "10rem",
+              width: "10rem",
             }}
           >
-            <Typography variant="h5" color="white">
+            <Typography variant="h3" color="white">
               BC
             </Typography>
             <Button onClick={f3} variant="contained" color="secondary">

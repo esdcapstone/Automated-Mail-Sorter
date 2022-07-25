@@ -130,13 +130,14 @@ def main():
     east = "pretrained/frozen_east_text_detection.pb"
     net = cv2.dnn.readNet(east)
 
-    img = cv2.imread("lol.jpg")
+    img = cv2.imread("temp.jpg")
 
     potential_regions = text_detect(net, img)
 
     for idx, region in enumerate(potential_regions):
-        cv2.imwrite(f"detected_{idx}.jpg", region)
-        print(f"region {idx}")
+        if region.size > 0:
+            cv2.imwrite(f"detected_{idx}.jpg", region)
+            print(f"region {idx}")
         #im, boxes = segment_img(region)
 
         #for box in boxes:

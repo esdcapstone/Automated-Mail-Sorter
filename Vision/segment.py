@@ -4,6 +4,10 @@ import functools
 
 
 def segment_img(image):
+    if (image.size == 0):
+        print("segment.py: empty image")
+        return image, []
+
     # Read the image and convert to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     

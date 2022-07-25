@@ -2,15 +2,20 @@ import cv2
 import json
 import torch
 
+from capture import capture
 from datetime import datetime
 from segment import segment_img
 from text_detect import text_detect
 from recognize_chars import recognize_characters
+from picamera2 import Picamera2
 
 
-cam = cv2.VideoCapture(0)
-cam.set(cv2.CAP_PROP_FRAME_WIDTH, 2560)     # img width
-cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1440)    # img height
+#cam = cv2.VideoCapture(0)
+#cam.set(cv2.CAP_PROP_FRAME_WIDTH, 2560)     # img width
+#cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1440)    # img height
+
+IMG_NAME = "temp.jpg"
+picam2 = Picamera2()
 
 
 def main():
@@ -41,13 +46,13 @@ def main():
 
             # Request received
             print("Received request for image capture")
-            cv2_ret, img = cam.read()
-            #img = cv2.imread("full.jpg")
+            #cv2_ret, img = cam.read()
+            img = capture(picam2, IMG_NAME)
 
-            if not cv2_ret:
-                # Could not read image, send this to controller
-                print("Failed to read")
-                continue
+            #if not cv2_ret:
+            #    # Could not read image, send this to controller
+            #    print("Failed to read")
+            #    continue
 
             start_time = datetime.now() # record time
             potential_regions = text_detect(net, img)
@@ -82,7 +87,6 @@ def main():
 
     except KeyboardInterrupt:
         print("\nExiting...\n")
-        cam.release()
         
 
 def send_to_controller(msg):

@@ -171,3 +171,4 @@ cython_debug/
 *.jpg
 *.png
 pretrained/
+config.json

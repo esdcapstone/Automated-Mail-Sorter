@@ -1,5 +1,0 @@
-{
-    "device": "cpu",
-    "torch_model": "pretrained/alphabets.pkl",
-    "east": "pretrained/frozen_east_text_detection.pb"
-}

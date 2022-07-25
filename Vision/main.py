@@ -1,9 +1,10 @@
 import cv2
 import json
+import requests
 import torch
 
 from capture import capture
-from datetime import datetime
+from datetime import datetime, timezone
 from segment import segment_img
 from text_detect import text_detect
 from recognize_chars import recognize_characters
@@ -78,6 +79,20 @@ def main():
                     print(f"\nProvince: {text}\n")
                     province_found = True
 
+                    # Controller
+                    req_status = send_to_web(
+                        url=config["backend_url"],
+                        data=json.dumps({
+                            "province": text,
+                            "timestamp": datetime.now(tz=timezone.utc).isoformat()
+                        }
+                    ))
+
+                    if req_status != 200:
+                        print(f"Got status {req_status} from server")
+                    else:
+                        print("Posted result to backend")
+
             if not province_found:
                 print("No text region with a province found")
 
@@ -93,8 +108,16 @@ def send_to_controller(msg):
     print(msg)
 
 
-def send_to_web(msg):
-    print(msg)
+def send_to_web(url: str, data):
+    r = requests.post(
+        url,
+        headers={
+            "Content-Type": "application/json"
+        },
+        data=data
+    )
+
+    return r.status_code
 
 
 def check_province(alpha_2_code):

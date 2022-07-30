@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import "./App.css";
 
@@ -47,43 +47,53 @@ let theme = {
   },
 };
 
-async function sendMessage(event, websockt) {
-  let button1Text = event.target.innerText;
-  try {
-    await websockt.send(button1Text);
-  } catch (e) {
-    console.log(`${e}`);
-  }
-}
 function App() {
-  const [val1, setVal1] = useState(0);
-  const [val2, setVal2] = useState(0);
-  const [val3, setVal3] = useState(0);
+  const [val1, setVal1] = useState(0); // For ON
+  const [val2, setVal2] = useState(0); // For AB
+  const [val3, setVal3] = useState(0); // For BC
 
+  const ws = useRef(null);
   // Websocket code
-  let validProvinceList = ["AB", "BC", "ON"];
-  ws = new WebSocket("ws://localhost:8000/data/ws");
-  ws.onmessage = (e) => {
-    let data;
-    try {
-      data = e.data; // Province name
-      setVal2(parseInt(data));
-    } catch {
-      console.log("Error in parsing websocket");
-      throw "Error in parsing websocket";
-    }
-  };
+  let validProvinceList = ["ON", "AB", "BC"];
+  useEffect(() => {
+    ws.current = new WebSocket("ws://localhost:8000/data/ws");
+    ws.current.onopen = () => console.log("websocket open");
+    ws.current.onmessage = (e) => {
+      let data;
+      try {
+        let provinceName = e.data; // Province name
+        console.log(provinceName);
+        switch (provinceName) {
+          case "ON":
+            setVal1((x) => x + 1);
+            break;
+          case "AB":
+            setVal2((x) => x + 1);
+            break;
+          case "BC":
+            console.log(val3);
+            setVal3((x) => x + 1);
+            break;
+          default:
+            throw "Invalid province name";
+        }
+      } catch (e) {
+        console.log(e);
+        console.log("Error in parsing websocket");
+        throw "Error in parsing websocket";
+      }
+    };
+  }, []);
 
   function f1(e) {
     setVal1(val1 + 1);
-    sendMessage(e, ws);
   }
   function f2() {
     setVal2(val2 + 1);
   }
-  function f3() {
-    setVal3(val3 + 1);
-  }
+  // function f3() {
+  //   val3.current + 1;
+  // }
   return (
     <ThemeProvider theme={theme}>
       <Grid container justifyContent="center">
@@ -182,7 +192,7 @@ function App() {
             <Typography variant="h3" color="white">
               BC
             </Typography>
-            <Button onClick={f3} variant="contained" color="secondary">
+            <Button variant="contained" color="secondary">
               {val3}
             </Button>
           </StyledPaper>

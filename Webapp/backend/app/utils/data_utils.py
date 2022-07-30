@@ -18,8 +18,8 @@ def get_data_by_id(db: Session, data_id: int):
 
 def createDataEntry(db: Session, dataEntry: data_schema.DataEntry):
     data = data_model.DataEntry(
-        timestamp=dataEntry.timestamp,
-        province=dataEntry.province
+        timestamp=dataEntry["timestamp"],
+        province=dataEntry["province"]
     )
     db.add(data)
     db.commit()

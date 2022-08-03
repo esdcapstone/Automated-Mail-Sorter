@@ -1,7 +1,9 @@
 import cv2
 import json
 import requests
+import serial
 import torch
+from time import sleep
 
 from capture import capture
 from datetime import datetime, timezone
@@ -38,12 +40,36 @@ def main():
     model = torch.load(config["torch_model"], map_location=config["device"])
     model.eval()
 
+    # Load serial communication for STM32
+    try:
+        ser = serial.Serial(
+                "/dev/serial0",
+                baudrate=9600,
+                parity=serial.PARITY_NONE,
+                stopbits=serial.STOPBITS_ONE,
+                bytesize=serial.EIGHTBITS
+            )
+
+        ser.flush()
+
+    except serial.Serial.SerialException:
+        print("Unable to initialize serial port")
+        exit(1)
+
     print("\n# All models loaded #\n")
 
     try:
         while True:
             # Block here
-            input("Press any key to take picture")
+            #input("Press any key to take picture")
+            stm32_cmd = ser.readline()
+            print(stm32_cmd)
+
+            if stm32_cmd != b"START\n":
+                ser.write(b"ACK:ERR\n")
+                continue
+            else:
+                ser.write(b"ACK:OK\n")
 
             # Request received
             print("Received request for image capture")
@@ -59,41 +85,67 @@ def main():
             potential_regions = text_detect(net, img)
             province_found = False
 
-            if len(potential_regions) == 0:
+            if len(potential_regions) > 0:
+                for idx, region in enumerate(potential_regions):
+                    print(f"region {idx}")
+                    im, boxes = segment_img(region)
+
+                    text = ""  # record each character in this string
+                    for box in boxes:
+                        im_boxed = im[box[1]:box[1] + box[3], box[0]:box[0] + box[2]]
+                        text += recognize_characters(model, im_boxed)
+                    text = text.upper() # alpha-2 codes are all caps
+
+                    if check_province(text):
+                        # Found
+                        # TODO: send message to controller and backend
+                        stm32_text = f"Province:{text}\n".upper()
+                        print(stm32_text)
+                        province_found = True
+
+                        # STM32
+                        ser.write(bytes(stm32_text, "utf-8"))
+
+                        stm32_cmd = ser.readline()
+                        print(stm32_cmd)
+
+                        if stm32_cmd != b"ACK:OK\n":
+                            continue
+
+                        # Backend
+                        req_status = send_to_web(
+                            url=config["backend_url"],
+                            data=json.dumps({
+                                "province": text,
+                                "timestamp": datetime.now(tz=timezone.utc).isoformat()
+                            }
+                        ))
+
+                        if req_status != 200:
+                            print(f"Got status {req_status} from server")
+                        else:
+                            print("Posted result to backend")
+            else:
                 print("No potential regions found")
-                continue
 
-            for idx, region in enumerate(potential_regions):
-                print(f"region {idx}")
-                im, boxes = segment_img(region)
+            if not province_found:
+                # STM32
+                stm32_text = "PROVINCE:UN\n"
+                ser.write(bytes(stm32_text, "utf-8"))
 
-                text = ""  # record each character in this string
-                for box in boxes:
-                    im_boxed = im[box[1]:box[1] + box[3], box[0]:box[0] + box[2]]
-                    text += recognize_characters(model, im_boxed)
-                text = text.upper() # alpha-2 codes are all caps
+                stm32_cmd = ser.readline()
 
-                if check_province(text):
-                    # Found
-                    # TODO: send message to controller and backend
-                    print(f"\nProvince: {text}\n")
-                    province_found = True
-
-                    # Controller
+                if stm32_cmd == b"ACK:UN\n":
                     req_status = send_to_web(
                         url=config["backend_url"],
                         data=json.dumps({
-                            "province": text,
+                            "province": "UN",
                             "timestamp": datetime.now(tz=timezone.utc).isoformat()
                         }
                     ))
+                elif stm32_cmd == b"ACK:OK\n":
+                    continue
 
-                    if req_status != 200:
-                        print(f"Got status {req_status} from server")
-                    else:
-                        print("Posted result to backend")
-
-            if not province_found:
                 print("No text region with a province found")
 
             # Reset params and display info

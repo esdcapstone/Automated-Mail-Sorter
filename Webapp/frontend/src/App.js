@@ -12,6 +12,7 @@ import { Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { Paper } from "@mui/material";
 
+import ProvinceContainer from "./components/ProvinceContainer";
 // Create a basic theme
 const defaultTheme = createTheme({
   palette: {
@@ -26,10 +27,6 @@ const defaultTheme = createTheme({
   },
 });
 
-const StyledPaper = styled("Paper")(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
-  color: theme.palette.primary.contrastText,
-}));
 // Make responsive text size
 // const { breakpoints, typography: { pxToRem } } = defaultTheme
 let theme = {
@@ -134,29 +131,8 @@ function App() {
         padding="25px"
         justifyContent="space-around"
       >
-        <Grid item>
-          <StyledPaper
-            elevation={10}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "10rem",
-              width: "10rem",
-            }}
-          >
-            <Typography variant="h3">ON</Typography>
-            <Button
-              className="Data__Button--ON"
-              onClick={f1}
-              variant="contained"
-              color="secondary"
-            >
-              {val1}
-            </Button>
-          </StyledPaper>
-        </Grid>
+        <ProvinceContainer name="ON" count={val1} theme={theme} />
+
         <Grid item>
           <StyledPaper
             elevation={10}

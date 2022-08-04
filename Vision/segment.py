@@ -1,3 +1,4 @@
+import argparse
 import cv2
 import numpy as np
 import functools
@@ -66,12 +67,19 @@ def segment_img(image):
 
 
 def main():
-    img = cv2.imread("detected_0.jpg")
+    parser = argparse.ArgumentParser(description="Segment an image into individual characters.")
+    parser.add_argument("img",
+                        type=str,
+                        help="image to segment"
+                        )
+    args = parser.parse_args()
 
-    _, boxes = segment_img(img)
+    image = cv2.imread(args.img)
+
+    _, boxes = segment_img(image)
 
     for idx, box in enumerate(boxes):
-        im_boxed = img[box[1]:box[1] + box[3], box[0]:box[0] + box[2]]
+        im_boxed = image[box[1]:box[1] + box[3], box[0]:box[0] + box[2]]
         cv2.imwrite(f"boxed_{idx}.jpg", im_boxed)
 
 

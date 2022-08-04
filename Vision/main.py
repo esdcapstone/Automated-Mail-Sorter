@@ -3,19 +3,14 @@ import json
 import requests
 import serial
 import torch
-from time import sleep
 
 from capture import capture
 from datetime import datetime, timezone
+from picamera2 import Picamera2
+from recognize_chars import recognize_characters
 from segment import segment_img
 from text_detect import text_detect
-from recognize_chars import recognize_characters
-from picamera2 import Picamera2
 
-
-#cam = cv2.VideoCapture(0)
-#cam.set(cv2.CAP_PROP_FRAME_WIDTH, 2560)     # img width
-#cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1440)    # img height
 
 IMG_NAME = "temp.jpg"
 picam2 = Picamera2()
@@ -51,6 +46,7 @@ def main():
             )
 
         ser.flush()
+        print("# Serial communication established #")
 
     except serial.Serial.SerialException:
         print("Unable to initialize serial port")
@@ -73,19 +69,20 @@ def main():
 
             # Request received
             print("Received request for image capture")
-            #cv2_ret, img = cam.read()
             img = capture(picam2, IMG_NAME)
 
-            #if not cv2_ret:
-            #    # Could not read image, send this to controller
-            #    print("Failed to read")
-            #    continue
+            if img is None:
+                print("Failed to capture image")
+                continue
 
             start_time = datetime.now() # record time
             potential_regions = text_detect(net, img)
             province_found = False
 
             if len(potential_regions) > 0:
+                # Found some text regions
+
+                # Iterate over each region and try to segment
                 for idx, region in enumerate(potential_regions):
                     print(f"region {idx}")
                     im, boxes = segment_img(region)
@@ -97,38 +94,38 @@ def main():
                     text = text.upper() # alpha-2 codes are all caps
 
                     if check_province(text):
-                        # Found
-                        # TODO: send message to controller and backend
-                        stm32_text = f"Province:{text}\n".upper()
-                        print(stm32_text)
+                        # Found a province
                         province_found = True
-
-                        # STM32
-                        ser.write(bytes(stm32_text, "utf-8"))
-
-                        stm32_cmd = ser.readline()
-                        print(stm32_cmd)
-
-                        if stm32_cmd != b"ACK:OK\n":
-                            continue
-
-                        # Backend
-                        req_status = send_to_web(
-                            url=config["backend_url"],
-                            data=json.dumps({
-                                "province": text,
-                                "timestamp": datetime.now(tz=timezone.utc).isoformat()
-                            }
-                        ))
-
-                        if req_status != 200:
-                            print(f"Got status {req_status} from server")
-                        else:
-                            print("Posted result to backend")
+                        break
             else:
                 print("No potential regions found")
 
-            if not province_found:
+            if province_found:
+                # STM32
+                stm32_text = f"Province:{text}\n".upper()
+                ser.write(bytes(stm32_text, "utf-8"))
+
+                stm32_cmd = ser.readline()
+                print(f"STM32: {stm32_cmd}")
+
+                if stm32_cmd != b"ACK:OK\n":
+                    print("Did not receive OK from STM, retrying...")
+                    continue
+
+                # Backend
+                req_status = send_to_web(
+                    url=config["backend_url"],
+                    data=json.dumps({
+                        "province": text,
+                        "timestamp": datetime.now(tz=timezone.utc).isoformat()
+                    }
+                ))
+
+                if req_status != 200:
+                    print(f"Got status {req_status} from server")
+                else:
+                    print("Posted result to backend server")
+            else:
                 # STM32
                 stm32_text = "PROVINCE:UN\n"
                 ser.write(bytes(stm32_text, "utf-8"))
@@ -136,6 +133,8 @@ def main():
                 stm32_cmd = ser.readline()
 
                 if stm32_cmd == b"ACK:UN\n":
+                    # STM detected too many requests for same letter
+                    # Classify this letter as unsorted
                     req_status = send_to_web(
                         url=config["backend_url"],
                         data=json.dumps({
@@ -143,22 +142,19 @@ def main():
                             "timestamp": datetime.now(tz=timezone.utc).isoformat()
                         }
                     ))
+                    print("Letter classified as UNSORTED")
                 elif stm32_cmd == b"ACK:OK\n":
-                    continue
+                    # STM readjusted the letter, try again
+                    print("Retrying in next iteration...")
+                else:
+                    print(f"Received unknown message from STM32: {stm32_cmd}")
 
-                print("No text region with a province found")
-
-            # Reset params and display info
-            province_found = False
-            print(f"\n# All operations took: {(datetime.now() - start_time).total_seconds()}s #\n") # display time taken
+            # Display timing info
+            print(f"\n# Current iteration took : {(datetime.now() - start_time).total_seconds()}s #\n") # display time taken
 
     except KeyboardInterrupt:
         print("\nExiting...\n")
         
-
-def send_to_controller(msg):
-    print(msg)
-
 
 def send_to_web(url: str, data):
     r = requests.post(

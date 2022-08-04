@@ -1,3 +1,4 @@
+import argparse
 import cv2
 import numpy as np
 import time
@@ -127,10 +128,21 @@ def text_detect(net, image):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Detect text regions inside an image.")
+    parser.add_argument("img",
+                        type=str,
+                        help="image to detect text inside"
+                        )
+    args = parser.parse_args()
+
+    if args.img == None:
+        print("Image not provided. Exiting.")
+        exit(1)
+
     east = "pretrained/frozen_east_text_detection.pb"
     net = cv2.dnn.readNet(east)
 
-    img = cv2.imread("temp.jpg")
+    img = cv2.imread(args.img)
 
     potential_regions = text_detect(net, img)
 
@@ -138,10 +150,6 @@ def main():
         if region.size > 0:
             cv2.imwrite(f"detected_{idx}.jpg", region)
             print(f"region {idx}")
-        #im, boxes = segment_img(region)
-
-        #for box in boxes:
-        #    im_boxed = im[box[1]:box[1] + box[3], box[0]:box[0] + box[2]]
 
 
 if __name__ == "__main__":

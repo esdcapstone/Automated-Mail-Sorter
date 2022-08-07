@@ -157,13 +157,18 @@ def main():
         
 
 def send_to_web(url: str, data):
-    r = requests.post(
-        url,
-        headers={
-            "Content-Type": "application/json"
-        },
-        data=data
-    )
+    print("here")
+    try:
+        r = requests.post(
+            url,
+            headers={
+                "Content-Type": "application/json"
+            },
+            data=data
+        )
+    except Exception:
+        print("Some error occured while sending request to backend")
+        return 500
 
     return r.status_code
 

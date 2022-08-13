@@ -58,6 +58,7 @@ def main():
         while True:
             # Block here
             #input("Press any key to take picture")
+            print("Waiting for command from STM32")
             stm32_cmd = ser.readline()
             print(stm32_cmd)
 
@@ -112,6 +113,8 @@ def main():
                     print("Did not receive OK from STM, retrying...")
                     continue
 
+                print(f"Found a valid province: {text}")
+
                 # Backend
                 req_status = send_to_web(
                     url=config["backend_url"],
@@ -135,6 +138,7 @@ def main():
                 if stm32_cmd == b"ACK:UN\n":
                     # STM detected too many requests for same letter
                     # Classify this letter as unsorted
+                    print(f"Found an invalid province: {text}")
                     req_status = send_to_web(
                         url=config["backend_url"],
                         data=json.dumps({
@@ -142,6 +146,11 @@ def main():
                             "timestamp": datetime.now(tz=timezone.utc).isoformat()
                         }
                     ))
+                    if req_status != 200:
+                        print(f"Got status {req_status} from server")
+                    else:
+                        print("Posted result to backend server")
+
                     print("Letter classified as UNSORTED")
                 elif stm32_cmd == b"ACK:OK\n":
                     # STM readjusted the letter, try again

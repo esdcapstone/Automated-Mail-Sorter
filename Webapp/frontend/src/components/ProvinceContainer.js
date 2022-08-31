@@ -8,16 +8,14 @@ import { Paper } from "@mui/material";
 function ProvinceContainer(props) {
   return (
     <Grid item>
-      
-        <Typography variant="h3">{props.provinceName}</Typography>
-        <Button
-          className="Data__Button--ON"
-          variant="contained"
-          color="secondary"
-        >
-          {props.count}
-        </Button>
-      </StyledPaper>
+      <Typography variant="h3">{props.provinceName}</Typography>
+      <Button
+        className="Data__Button--ON"
+        variant="contained"
+        color="secondary"
+      >
+        {props.count}
+      </Button>
     </Grid>
   );
 }

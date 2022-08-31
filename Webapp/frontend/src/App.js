@@ -40,6 +40,11 @@ let theme = {
   },
 };
 
+const StyledPaper = styled("Paper")(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
+}));
+
 function App() {
   const [val1, setVal1] = useState(0); // For ON
   const [val2, setVal2] = useState(0); // For AB

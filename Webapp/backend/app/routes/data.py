@@ -21,7 +21,8 @@ data = APIRouter(
     tags=['data']
 )
 
-validProvinces = ["AB", "BC", "MB", "NB", "NL", "NS", "ON", "PE", "QC", "SK"]
+validProvinces = ["AB", "BC", "MB", "NB",
+                  "NL", "NS", "ON", "PE", "QC", "SK", "UN"]
 
 
 def get_db():

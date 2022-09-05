@@ -14,4 +14,4 @@ Code for handling detection and character recognition on Raspberry Pi for Mail S
 # Credits
 - PyImageSearch *[OpenCV EAST Text Detection](https://pyimagesearch.com/2018/08/20/opencv-text-detection-east-text-detector/)*
 - Kaggle *[A-Z Handwritten Dataset](https://www.kaggle.com/datasets/sachinpatel21/az-handwritten-alphabets-in-csv-format)*
-- minhthangdang *[CharactersSegmentationRecognition](https://github.com/minhthangdang/CharactersSegmentationRecognition)
+- minhthangdang *[CharactersSegmentationRecognition](https://github.com/minhthangdang/CharactersSegmentationRecognition)*

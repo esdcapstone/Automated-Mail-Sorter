@@ -16,4 +16,4 @@ Sort mail envelopes according to handwritten alpha-2 province codes and display 
 ![Single Letter Sort](demo.gif)
 
 # Purpose
-This project was worked on by students from Embedded Systems Development program at Conestoga College as a part of their final semester.
+The motivation for this project came from finding a solution to a real world problem by collaborating the various skill set that team members acquired so far: Computer Vision, Embedded Systems and Web applications. 
